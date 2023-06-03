@@ -1,10 +1,36 @@
+// ignore_for_file: prefer_final_fields
+
+import 'package:book_club/states/current_user.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../utils/theme.dart';
 import '../../../widgets/globalcontainer.dart';
 
-class SignUpForm extends StatelessWidget {
+class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
+
+  @override
+  State<SignUpForm> createState() => _SignUpFormState();
+}
+
+class _SignUpFormState extends State<SignUpForm> {
+  TextEditingController _fullUserNameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  TextEditingController _confirmPasswordController = TextEditingController();
+
+  void _signUpUser(String email, String password, BuildContext context) async {
+    CurrentUser currentUser = Provider.of<CurrentUser>(context, listen: false);
+
+    try {
+      if (await currentUser.signUpUser(email, password)) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +55,11 @@ class SignUpForm extends StatelessWidget {
           const SizedBox(height: 15),
           _registerEmail(),
           const SizedBox(height: 15),
-          _confirmEmail(),
-          const SizedBox(height: 15),
           _registerPassword(),
           const SizedBox(height: 15),
           _confirmPassword(),
           const SizedBox(height: 30),
-          _registerButton(),
+          _registerButton(context),
           const SizedBox(height: 15),
         ],
       ),
@@ -45,6 +69,7 @@ class SignUpForm extends StatelessWidget {
 // Name text form field
   TextFormField _registerFullName() {
     return TextFormField(
+      controller: _fullUserNameController,
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -63,6 +88,7 @@ class SignUpForm extends StatelessWidget {
 // Email text form field
   TextFormField _registerEmail() {
     return TextFormField(
+      controller: _emailController,
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -78,26 +104,10 @@ class SignUpForm extends StatelessWidget {
     );
   }
 
-  TextFormField _confirmEmail() {
-    return TextFormField(
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        prefixIcon: const Icon(
-          Icons.alternate_email,
-        ),
-        hintText: 'Confirm your email',
-        hintStyle: const TextStyle(
-          fontStyle: FontStyle.italic,
-        ),
-      ),
-    );
-  }
-
 // Password text form field
   TextFormField _registerPassword() {
     return TextFormField(
+      controller: _passwordController,
       obscureText: true,
       decoration: InputDecoration(
         border: OutlineInputBorder(
@@ -116,6 +126,7 @@ class SignUpForm extends StatelessWidget {
 
   TextFormField _confirmPassword() {
     return TextFormField(
+      controller: _confirmPasswordController,
       obscureText: true,
       decoration: InputDecoration(
         border: OutlineInputBorder(
@@ -132,11 +143,28 @@ class SignUpForm extends StatelessWidget {
     );
   }
 
-// Login button
-  ElevatedButton _registerButton() {
+// Register button
+  ElevatedButton _registerButton(BuildContext context) {
     return ElevatedButton(
-      //TODO: pass a function to the following variable for _logInButton
-      onPressed: () {},
+      // Logic section
+      onPressed: () {
+        String email = _emailController.text.trim();
+        String password = _passwordController.text.trim();
+        String confirmPassword = _confirmPasswordController.text.trim();
+
+        if (password == confirmPassword) {
+          _signUpUser(email, password, context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Email/passwords do not match!'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      },
+
+      // Styling section
       style: ElevatedButton.styleFrom(
         backgroundColor: Themes.redColor,
         foregroundColor: Themes.whiteColor,

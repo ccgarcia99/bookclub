@@ -1,10 +1,41 @@
+import 'package:book_club/screens/home/home.dart';
 import 'package:book_club/screens/signup/signup.dart';
+import 'package:book_club/states/current_user.dart';
 import 'package:book_club/utils/theme.dart';
 import 'package:book_club/widgets/globalcontainer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class LoginForm extends StatelessWidget {
+class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
+
+  @override
+  State<LoginForm> createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
+  TextEditingController _emailLogIn = TextEditingController();
+  TextEditingController _passwordLogin = TextEditingController();
+
+  void _logInUser(String email, String password, BuildContext context) async {
+    CurrentUser _currentUser = Provider.of<CurrentUser>(context, listen: false);
+
+    try {
+      if (await _currentUser.logInUser(email, password)) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error Signing in!'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +60,7 @@ class LoginForm extends StatelessWidget {
           const SizedBox(height: 15),
           _inputPassword(),
           const SizedBox(height: 30),
-          _logInButton(),
+          _logInButton(context),
           const SizedBox(height: 10),
           _registerRow(context)
         ],
@@ -37,9 +68,29 @@ class LoginForm extends StatelessWidget {
     );
   }
 
+// Email text form field
+  TextFormField _inputEmail() {
+    return TextFormField(
+      controller: _emailLogIn,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        prefixIcon: const Icon(
+          Icons.alternate_email,
+        ),
+        hintText: 'Email',
+        hintStyle: const TextStyle(
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+    );
+  }
+
 // Password text form field
   TextFormField _inputPassword() {
     return TextFormField(
+      controller: _passwordLogin,
       obscureText: true,
       decoration: InputDecoration(
         border: OutlineInputBorder(
@@ -56,29 +107,13 @@ class LoginForm extends StatelessWidget {
     );
   }
 
-// Email text form field
-  TextFormField _inputEmail() {
-    return TextFormField(
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        prefixIcon: const Icon(
-          Icons.alternate_email,
-        ),
-        hintText: 'Email',
-        hintStyle: const TextStyle(
-          fontStyle: FontStyle.italic,
-        ),
-      ),
-    );
-  }
-
 // Login button
-  ElevatedButton _logInButton() {
+  ElevatedButton _logInButton(BuildContext context) {
     return ElevatedButton(
       //TODO: pass a function to the following variable for _logInButton
-      onPressed: () {},
+      onPressed: () {
+        _logInUser(_emailLogIn.text, _passwordLogin.text, context);
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: Themes.redColor,
         foregroundColor: Themes.whiteColor,
@@ -124,7 +159,6 @@ class LoginForm extends StatelessWidget {
 
   TextButton _registerButton(BuildContext context) {
     return TextButton(
-      //TODO: pass a function to the following variable for _registerButton
       onPressed: () {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => SignUpScreen()));
@@ -142,5 +176,4 @@ class LoginForm extends StatelessWidget {
       ),
     );
   }
-// Register row segment END
 }
