@@ -24,8 +24,17 @@ class _SignUpFormState extends State<SignUpForm> {
     CurrentUser currentUser = Provider.of<CurrentUser>(context, listen: false);
 
     try {
-      if (await currentUser.signUpUser(email, password)) {
+      String _returnString = await currentUser.signUpUser(email, password);
+
+      if (_returnString == "success") {
         Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error signing-up!'),
+            duration: Duration(seconds: 2),
+          ),
+        );
       }
     } catch (e) {
       print(e);
