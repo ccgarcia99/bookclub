@@ -24,7 +24,7 @@ class LoginScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(10),
                   child: Image.asset(
-                    ImgPath.googlePath,
+                    ImgPath.loginEmotePath,
                     height: 125,
                   ),
                 ),
