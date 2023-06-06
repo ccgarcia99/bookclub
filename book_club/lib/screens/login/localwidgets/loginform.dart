@@ -27,52 +27,52 @@ class _LoginFormState extends State<LoginForm> {
 
   /// Logs in the user based on the specified login type (email or Google) with optional email and password,
   /// and displays appropriate messages or navigates to the home screen.
-void _logInUser({
-  required LoginType type,
-  String email = '',
-  String password = '',
-  required BuildContext context,
-}) async {
-  CurrentUser currentUser = Provider.of<CurrentUser>(context, listen: false);
+  void _logInUser({
+    required LoginType type,
+    String email = '',
+    String password = '',
+    required BuildContext context,
+  }) async {
+    CurrentUser currentUser = Provider.of<CurrentUser>(context, listen: false);
 
-  try {
-    String returnString = '';
+    try {
+      String returnString = '';
 
-    switch (type) {
-      case LoginType.email:
-        returnString = await currentUser.logInUserwithEmail(email, password);
-        break;
-      case LoginType.google:
-        returnString = await currentUser.logInUserwithGoogle();
+      switch (type) {
+        case LoginType.email:
+          returnString = await currentUser.logInUserwithEmail(email, password);
+          break;
+        case LoginType.google:
+          returnString = await currentUser.logInUserwithGoogle();
 
-        if (returnString == 'success') {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
-          return; // Exit the method after successful navigation
-        }
-        break;
-      default:
-        returnString = 'Invalid login type'; // Assign a value to returnString for the default case
+          if (returnString == 'success') {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
+            return; // Exit the method after successful navigation
+          }
+          break;
+        default:
+          returnString =
+              'Invalid login type'; // Assign a value to returnString for the default case
+      }
+      // TODO: Try to fix the snackbar error message not displaying
+      if (returnString == 'success') {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error signing in!'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      print(e);
     }
-
-    if (returnString == 'success') {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error signing in!'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
-  } catch (e) {
-    print(e);
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -157,20 +157,12 @@ void _logInUser({
           context: context,
         );
       },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Themes.redColor,
-        foregroundColor: Themes.whiteColor,
-        minimumSize: const Size(double.infinity, 50),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      ),
-      child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 100),
+      style: NativeStyles.commonBtnStyle,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 100),
         child: Text(
           'Log-in!',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: NativeStyles.commonTxtStyle,
         ),
       ),
     );
@@ -189,24 +181,11 @@ void _logInUser({
         ImgPath.googlePath,
         width: 35,
       ),
-      label: const Text(
+      label: Text(
         'Continue with Google',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+        style: NativeStyles.commonTxtStyle,
       ),
-      style: ElevatedButton.styleFrom(
-        side: const BorderSide(
-          color: Themes.whiteColor,
-          width: 1.2,
-          style: BorderStyle.solid,
-        ),
-        foregroundColor: Themes.whiteColor,
-        backgroundColor: Themes.greyColor,
-        minimumSize: const Size(double.infinity, 50),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      ),
+      style: NativeStyles.specialBtnStyle,
     );
   }
 
