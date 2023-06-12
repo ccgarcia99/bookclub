@@ -1,4 +1,6 @@
 import 'package:book_club/common/commons.dart';
+import 'package:book_club/screens/createGroup/creategroup.dart';
+import 'package:book_club/screens/joinGroup/joingroup.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/theme.dart';
@@ -6,8 +8,21 @@ import '../../utils/theme.dart';
 class NoGroupScreen extends StatelessWidget {
   const NoGroupScreen({super.key});
 
-  void _goToJoin() {}
-  void _goToCreate() {}
+  void _goToJoin(BuildContext context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => JoinGroup(),
+        ));
+  }
+
+  void _goToCreate(BuildContext context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CreateGroup(),
+        ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +32,8 @@ class NoGroupScreen extends StatelessWidget {
         children: [
           const Spacer(flex: 1),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
             child: Image.asset(ImgPath.logoPath, width: 150),
           ),
           // Header Text
@@ -83,7 +99,7 @@ class NoGroupScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ElevatedButton(
-          onPressed: () => _goToJoin(),
+          onPressed: () => _goToJoin(context),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.black,
             foregroundColor: Colors.white,
@@ -107,7 +123,7 @@ class NoGroupScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ElevatedButton(
-        onPressed: () => _goToCreate(),
+        onPressed: () => _goToCreate(context),
         style: ElevatedButton.styleFrom(
           backgroundColor: Themes.redColor,
           foregroundColor: Themes.whiteColor,

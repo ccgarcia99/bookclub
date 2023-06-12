@@ -11,7 +11,7 @@ class NativeDatabase {
 
     try {
       await _firestore.collection('users').doc(user.uid).set({
-        'fullName': user.fullname,
+        'fullName': user.fullName,
         'email': user.email,
         'accountCreated': Timestamp.now(),
       });
@@ -30,9 +30,10 @@ class NativeDatabase {
       DocumentSnapshot _docSnap =
           await _firestore.collection('users').doc(uid).get();
       retVal.uid = uid;
-      retVal.fullname = _docSnap.get("fullName");
-      retVal.email = _docSnap.get("email");
-      retVal.accountCreated = _docSnap.get("accountCreated");
+      retVal.fullName = _docSnap['fullName'];
+      retVal.email = _docSnap['email'];
+      retVal.accountCreated = _docSnap['accountCreated'];
+      retVal.groupId = _docSnap['groupId'];
     } catch (e) {
       print(e);
     }
