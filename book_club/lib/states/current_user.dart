@@ -7,46 +7,32 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class CurrentUser with ChangeNotifier {
-  NativeUserInf ourUser() => NativeUserInf();
-
-  NativeUserInf get getCurrentUsr => ourUser();
-
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  NativeUserInf ourUserObject = NativeUserInf(); // Change method to variable
+  NativeUserInf get getCurrentUsr => ourUserObject;
 
   Future<String> onStartup() async {
     String retVal = 'error';
-    // retval always returns 'error'. why?
-    //TODO: Investigate
+
     try {
-      User? firebaseUser = await _auth.currentUser;
+      User? firebaseUser = _auth.currentUser;
+
       if (firebaseUser != null) {
         NativeUserInf ourUser =
             await NativeDatabase().getUserInfo(firebaseUser.uid);
-        if (ourUser != null) {
+
+        if (ourUser != null && ourUser.uid != null) {
+          ourUserObject = ourUser; // Store the fetched user data
           retVal = 'success';
         }
       }
-      retVal = 'success';
     } catch (e) {
       print(e);
     }
+
     return retVal;
   }
 
-  Future<String> signOut() async {
-    String retVal = 'error';
-    try {
-      await _auth.signOut();
-      // ignore: unused_local_variable
-      NativeUserInf ourUser = NativeUserInf();
-      retVal = 'success';
-    } catch (e) {
-      print(e);
-    }
-    return retVal;
-  }
-
-  // Native sign up with email and password
   Future<String> signUpUser(
       String email, String password, String fullName) async {
     String retVal = 'error';
@@ -63,28 +49,19 @@ class CurrentUser with ChangeNotifier {
 
       _user.uid = userCredential.user!.uid;
       _user.email = userCredential.user!.email;
-      _user.fullname = fullName;
-      NativeDatabase().createUser(_user);
+      _user.fullName = fullName;
+
       String _returnString = await NativeDatabase().createUser(_user);
 
       if (_returnString == 'success') {
         retVal = 'success';
       }
-
-      // DO NOT TOUCH THE BOTTOM CODE FOR NOW
-      /*if (userCredential.user != null) {
-        ourUser().uid = userCredential.user!.uid;
-        ourUser().email = userCredential.user!.email!;
-        retVal = 'success';
-      }*/
-      // BOTTOM CODE ENDS
     } on FirebaseAuthException catch (e) {
       throw FirebaseAuthException(message: e.message, code: e.code);
     }
     return retVal;
   }
 
-  // Native email and password
   Future<String> logInUserwithEmail(String email, String password) async {
     String retVal = 'error';
 
@@ -100,7 +77,7 @@ class CurrentUser with ChangeNotifier {
       );
       NativeUserInf ourUser =
           await NativeDatabase().getUserInfo(userCredential.user!.uid);
-      if (ourUser != null) {
+      if (ourUser != null && ourUser.uid != null) {
         retVal = 'success';
       }
     } on FirebaseAuthException catch (e) {
@@ -109,7 +86,6 @@ class CurrentUser with ChangeNotifier {
     return retVal;
   }
 
-  // Google sign in token
   Future<String> logInUserwithGoogle() async {
     String retVal = 'error';
     GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -137,22 +113,29 @@ class CurrentUser with ChangeNotifier {
       if (userCredential.additionalUserInfo!.isNewUser) {
         _user.uid = userCredential.user?.uid;
         _user.email = userCredential.user?.email;
-        _user.fullname = userCredential.user?.displayName;
-        NativeDatabase().createUser(_user);
+        _user.fullName = userCredential.user?.displayName;
+        await NativeDatabase().createUser(_user);
       }
 
       NativeUserInf ourUser =
           await NativeDatabase().getUserInfo(userCredential.user!.uid);
 
-      if (ourUser != null) {
+      if (ourUser != null && ourUser.uid != null) {
         retVal = 'success';
       }
-      /*    DO NOT TOUCH! NOLI SE TANGERE
-      ourUser().uid = userCredential.user?.uid;
-      ourUser().email = userCredential.user?.email; */
-      retVal = 'success';
     } on FirebaseAuthException catch (e) {
       throw FirebaseAuthException(message: e.message, code: e.code);
+    }
+    return retVal;
+  }
+
+  Future<String> signOut() async {
+    String retVal = 'error';
+    try {
+      await _auth.signOut();
+      retVal = 'success';
+    } catch (e) {
+      print(e);
     }
     return retVal;
   }

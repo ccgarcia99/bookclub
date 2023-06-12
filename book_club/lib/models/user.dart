@@ -3,13 +3,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class NativeUserInf {
   String? uid;
   String? email;
-  String? fullname;
+  String? fullName;
   Timestamp? accountCreated;
+  String? groupId;
 
   NativeUserInf({
     this.uid,
     this.email,
-    this.fullname,
+    this.fullName,
     this.accountCreated,
+    this.groupId
   });
 }
