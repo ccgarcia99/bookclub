@@ -36,7 +36,7 @@ class CurrentUser with ChangeNotifier {
   Future<String> signUpUser(
       String email, String password, String fullName) async {
     String retVal = 'error';
-    NativeUserInf _user = NativeUserInf();
+    NativeUserInf user = NativeUserInf();
 
     if (email.isEmpty || password.isEmpty) {
       print('Email or password is empty');
@@ -47,13 +47,13 @@ class CurrentUser with ChangeNotifier {
       UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      _user.uid = userCredential.user!.uid;
-      _user.email = userCredential.user!.email;
-      _user.fullName = fullName;
+      user.uid = userCredential.user!.uid;
+      user.email = userCredential.user!.email;
+      user.fullName = fullName;
 
-      String _returnString = await NativeDatabase().createUser(_user);
+      String returnString = await NativeDatabase().createUser(user);
 
-      if (_returnString == 'success') {
+      if (returnString == 'success') {
         retVal = 'success';
       }
     } on FirebaseAuthException catch (e) {
@@ -88,33 +88,32 @@ class CurrentUser with ChangeNotifier {
 
   Future<String> logInUserwithGoogle() async {
     String retVal = 'error';
-    GoogleSignIn _googleSignIn = GoogleSignIn(
+    GoogleSignIn googleSignIn = GoogleSignIn(
       scopes: [
         'email',
         'https://www.googleapis.com/auth/contacts.readonly',
       ],
     );
 
-    NativeUserInf _user = NativeUserInf();
+    NativeUserInf user = NativeUserInf();
 
     try {
-      GoogleSignInAccount? _googleUser = await _googleSignIn.signIn();
-      GoogleSignInAuthentication? _googleAuth =
-          await _googleUser?.authentication;
+      GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
-        idToken: _googleAuth?.idToken,
-        accessToken: _googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+        accessToken: googleAuth?.accessToken,
       );
 
       UserCredential userCredential =
           await _auth.signInWithCredential(credential);
 
       if (userCredential.additionalUserInfo!.isNewUser) {
-        _user.uid = userCredential.user?.uid;
-        _user.email = userCredential.user?.email;
-        _user.fullName = userCredential.user?.displayName;
-        await NativeDatabase().createUser(_user);
+        user.uid = userCredential.user?.uid;
+        user.email = userCredential.user?.email;
+        user.fullName = userCredential.user?.displayName;
+        await NativeDatabase().createUser(user);
       }
 
       NativeUserInf ourUser =
@@ -133,6 +132,7 @@ class CurrentUser with ChangeNotifier {
     String retVal = 'error';
     try {
       await _auth.signOut();
+      ourUserObject = NativeUserInf(); // Or ourUserObject = null;
       retVal = 'success';
     } catch (e) {
       print(e);

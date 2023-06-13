@@ -1,9 +1,13 @@
-// ignore_for_file: prefer_final_fields
+// ignore_for_file: prefer_final_fields, use_build_context_synchronously
 
 import 'package:book_club/widgets/globalcontainer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../common/commons.dart';
+import '../../services/database.dart';
+import '../../states/current_user.dart';
+import '../root/root.dart';
 
 class JoinGroup extends StatefulWidget {
   const JoinGroup({super.key});
@@ -14,6 +18,21 @@ class JoinGroup extends StatefulWidget {
 
 class _JoinGroupState extends State<JoinGroup> {
   TextEditingController _groupIdController = TextEditingController();
+
+  void _joinGroup(BuildContext context, String groupID) async {
+    CurrentUser currentUser = Provider.of<CurrentUser>(context, listen: false);
+    String returnString = await NativeDatabase()
+        .createGroup(groupID, currentUser.getCurrentUsr.uid);
+    if (returnString == 'success') {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RootWidget(),
+        ),
+        (route) => false,
+      );
+    } else {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +94,7 @@ class _JoinGroupState extends State<JoinGroup> {
 
   ElevatedButton joinGroupButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: ()=> _joinGroup(context, _groupIdController.text),
       style: NativeStyles.commonBtnStyle,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 100),

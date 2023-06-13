@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:book_club/common/commons.dart';
 import 'package:book_club/screens/createGroup/creategroup.dart';
 import 'package:book_club/screens/joinGroup/joingroup.dart';
