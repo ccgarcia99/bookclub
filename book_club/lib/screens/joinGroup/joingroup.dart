@@ -21,8 +21,7 @@ class _JoinGroupState extends State<JoinGroup> {
 
   void _joinGroup(BuildContext context, String groupID) async {
     CurrentUser currentUser = Provider.of<CurrentUser>(context, listen: false);
-    String returnString = await NativeDatabase()
-        .createGroup(groupID, currentUser.getCurrentUsr.uid);
+    String returnString = await NativeDatabase().joinGroup(groupID, currentUser.getCurrentUsr.uid);
     if (returnString == 'success') {
       Navigator.pushAndRemoveUntil(
         context,
@@ -94,7 +93,7 @@ class _JoinGroupState extends State<JoinGroup> {
 
   ElevatedButton joinGroupButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: ()=> _joinGroup(context, _groupIdController.text),
+      onPressed: () => _joinGroup(context, _groupIdController.text),
       style: NativeStyles.commonBtnStyle,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 100),

@@ -68,19 +68,23 @@ class NativeDatabase {
     return retVal;
   }
 
-  Future<String> joinGroup(String groupID, String userID) async {
+  Future<String> joinGroup(String groupID, String? userID) async {
     String retVal = 'error';
     List<String> members = [];
     try {
-      members.add(userID);
-      await _firestore.collection("groups").doc(groupID).update({
-        'members': FieldValue.arrayUnion(members),
-      });
-      await _firestore.collection("users").doc(userID).update({
-        'groupId': groupID,
-      });
+      if (userID == null) {
+        return 'error';
+      } else {
+        members.add(userID);
+        await _firestore.collection("groups").doc(groupID).update({
+          'members': FieldValue.arrayUnion(members),
+        });
+        await _firestore.collection("users").doc(userID).update({
+          'groupId': groupID,
+        });
 
-      retVal = 'success';
+        retVal = 'success';
+      }
     } catch (e) {
       print(e);
     }
