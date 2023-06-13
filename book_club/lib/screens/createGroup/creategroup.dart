@@ -1,7 +1,11 @@
-// ignore_for_file: prefer_final_fields
+// ignore_for_file: prefer_final_fields, use_build_context_synchronously
 
+import 'package:book_club/screens/root/root.dart';
+import 'package:book_club/services/database.dart';
+import 'package:book_club/states/current_user.dart';
 import 'package:book_club/widgets/globalcontainer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../common/commons.dart';
 
@@ -13,6 +17,22 @@ class CreateGroup extends StatefulWidget {
 }
 
 class _CreateGroupState extends State<CreateGroup> {
+  void _createGroup(BuildContext context, String groupName) async {
+    CurrentUser currentUser = Provider.of<CurrentUser>(context, listen: false);
+    String returnString = await NativeDatabase()
+        .createGroup(groupName, currentUser.getCurrentUsr.uid);
+    if (returnString == 'success') {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RootWidget(),
+        ),
+        (route) => false,
+      );
+    } else {}
+  }
+
+
   TextEditingController _groupNameController = TextEditingController();
 
   @override
@@ -75,7 +95,7 @@ class _CreateGroupState extends State<CreateGroup> {
 
   ElevatedButton createGroupButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () => _createGroup(context, _groupNameController.text),
       style: NativeStyles.commonBtnStyle,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 100),

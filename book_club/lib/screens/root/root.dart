@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:book_club/screens/home/home.dart';
 import 'package:book_club/screens/login/login.dart';
 import 'package:book_club/screens/nogroup/nogroup.dart';

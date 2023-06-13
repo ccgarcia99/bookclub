@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_final_fields
+// ignore_for_file: prefer_final_fields, avoid_print
 
 import 'package:book_club/states/current_user.dart';
 import 'package:flutter/material.dart';
@@ -25,10 +25,10 @@ class _SignUpFormState extends State<SignUpForm> {
     CurrentUser currentUser = Provider.of<CurrentUser>(context, listen: false);
 
     try {
-      String _returnString =
+      String returnString =
           await currentUser.signUpUser(email, password, fullName);
 
-      if (_returnString == "success") {
+      if (returnString == "success") {
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
